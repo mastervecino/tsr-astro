@@ -7,8 +7,8 @@ export default defineConfig({
   integrations: [sitemap()],
   output: 'static',
   build: {
-    // Inline small assets for performance
-    inlineStylesheets: 'auto',
+    // Never inline stylesheets — keeps CSP compatible (no 'unsafe-inline' needed)
+    inlineStylesheets: 'never',
   },
   markdown: {
     shikiConfig: {
