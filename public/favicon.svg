@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="4" fill="#1A2744"/>
+  <text
+    x="16" y="13"
+    text-anchor="middle"
+    font-family="Arial, sans-serif"
+    font-weight="300"
+    font-size="6"
+    fill="#60A5FA"
+    letter-spacing="0.5"
+  >TSR</text>
+  <text
+    x="16" y="23"
+    text-anchor="middle"
+    font-family="Arial, sans-serif"
+    font-weight="700"
+    font-size="10"
+    fill="#FFFFFF"
+    letter-spacing="0.3"
+  >TSR</text>
+</svg>

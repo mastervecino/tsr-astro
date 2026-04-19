@@ -1,0 +1,60 @@
+---
+/**
+ * Logo.astro — Brand Manual §04 Wordmark
+ *
+ * Tension visual rule:
+ *   "THE STRATEGIC" → weight 300, Steel Blue (#60A5FA), ~55% of RECRUITER
+ *   "RECRUITER"     → weight 700, White (dark bg) / Deep Navy (light bg)
+ */
+interface Props {
+  /** 'dark' = white RECRUITER on navy bg (default) | 'light' = navy RECRUITER on white bg */
+  variant?: 'dark' | 'light';
+  /** Additional CSS class */
+  class?: string;
+}
+
+const { variant = 'dark', class: className } = Astro.props;
+---
+
+<a
+  href="/"
+  class:list={['logo', `logo--${variant}`, className]}
+  aria-label="The Strategic Recruiter — Home"
+>
+  <span class="logo__strategic">THE STRATEGIC</span>
+  <span class="logo__recruiter">RECRUITER</span>
+</a>
+
+<style>
+  .logo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+    gap: 1px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  /* "THE STRATEGIC" — §04: weight 300, Steel Blue, ~55% of RECRUITER */
+  .logo__strategic {
+    font-family: 'Inter', Arial, sans-serif;
+    font-weight: 300;
+    font-size: 0.94rem;       /* ≈ 55% of 1.72rem recruiter */
+    letter-spacing: 0.18em;
+    color: #60A5FA;           /* --steel-blue */
+    text-transform: uppercase;
+  }
+
+  /* "RECRUITER" — §04: weight 700, White on dark / Navy on light */
+  .logo__recruiter {
+    font-family: 'Inter', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 1.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+
+  .logo--dark .logo__recruiter  { color: #FFFFFF; }
+  .logo--light .logo__recruiter { color: #1A2744; }
+</style>

@@ -1,0 +1,162 @@
+---
+/**
+ * Footer.astro — Brand Manual §07
+ * Background: #1a3a52
+ * Text: white, 13px
+ * Links: #d4af37
+ * Padding: 30px
+ */
+import Logo from './Logo.astro';
+---
+
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <Logo variant="dark" class="footer-logo" />
+        <p class="footer-tagline">Data-Informed Talent Strategy</p>
+        <p class="footer-desc">
+          Authority intelligence for IT Recruiting and Talent Acquisition leaders.
+          Written from 7 years in the field — not the theory.
+        </p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <h3>Navigate</h3>
+        <ul role="list">
+          <li><a href="/">Home</a></li>
+          <li><a href="/blog">Insights</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </nav>
+
+      <div class="footer-connect">
+        <h3>Connect</h3>
+        <ul role="list">
+          <li>
+            <a
+              href="https://www.linkedin.com/in/manuelvecino"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Manuel Felipe Vecino on LinkedIn"
+            >
+              LinkedIn
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://thestrategicrecruiter.beehiiv.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Subscribe to the TSR newsletter on Beehiiv"
+            >
+              Newsletter
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        © <span id="footer-year"></span> The Strategic Recruiter · Manuel Felipe Vecino
+      </p>
+      <p class="footer-note">
+        No sponsored content. No vendor bias. Just strategy.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const el = document.getElementById('footer-year');
+  if (el) el.textContent = String(new Date().getFullYear());
+</script>
+
+<style>
+  /* §07 Footer spec: bg #1a3a52, text white 13px, links #d4af37, padding 30px */
+  .site-footer {
+    background: #1a3a52;
+    color: #fff;
+    padding: 30px 0;
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 20px;
+    align-items: start;
+  }
+
+  .footer-tagline {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: rgba(255,255,255,0.5);
+    margin-top: 6px;
+    margin-bottom: 10px;
+  }
+
+  .footer-desc {
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  /* §07 footer nav links: #d4af37 */
+  .footer-nav h3,
+  .footer-connect h3 {
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 12px;
+  }
+
+  .footer-nav a,
+  .footer-connect a {
+    display: block;
+    font-size: 13px;     /* §07 exact: 13px */
+    color: #d4af37;      /* §07 exact: #d4af37 */
+    margin-bottom: 8px;
+    transition: opacity 0.3s ease-in-out;
+    text-decoration: none;
+  }
+  .footer-nav a:hover,
+  .footer-connect a:hover,
+  .footer-nav a:focus-visible,
+  .footer-connect a:focus-visible {
+    opacity: 0.72;
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .footer-bottom p {
+    font-size: 0.76rem;
+    color: rgba(255,255,255,0.42);
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

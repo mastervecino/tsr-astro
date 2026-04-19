@@ -1,0 +1,365 @@
+---
+/**
+ * about.astro — Author bio and brand positioning
+ * NO forms per spec — CTA is an external link to Beehiiv
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const postCount = posts.length;
+---
+
+<BaseLayout
+  title="About — The Strategic Recruiter"
+  description="Manuel Felipe Vecino — 7 years building and scaling IT recruiting functions. The Strategic Recruiter is intelligence written from the field, not the theory."
+>
+
+  <!-- ── About Hero ── -->
+  <section class="about-hero" aria-labelledby="about-heading">
+    <div class="container">
+      <span class="label">ABOUT TSR</span>
+      <h1 id="about-heading">Written from the field. Not the theory.</h1>
+      <p class="about-hero-sub">
+        7 years. 40+ companies. The Strategic Recruiter is the newsletter I wish had existed
+        when I was building my first recruiting function from scratch.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Bio Section ── -->
+  <section class="section bio-section" aria-labelledby="bio-heading">
+    <div class="container bio-inner">
+
+      <div class="bio-avatar-col" aria-hidden="true">
+        <div class="bio-avatar">MV</div>
+        <p class="bio-title">Manuel Felipe Vecino</p>
+        <p class="bio-subtitle">Talent Acquisition Strategist</p>
+        <div class="bio-stats">
+          <div class="bio-stat">
+            <span class="bio-stat-num">7+</span>
+            <span>Years in field</span>
+          </div>
+          <div class="bio-stat">
+            <span class="bio-stat-num">40+</span>
+            <span>Companies</span>
+          </div>
+          <div class="bio-stat">
+            <span class="bio-stat-num">{postCount}</span>
+            <span>Published insights</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bio-copy">
+        <h2 id="bio-heading">The story behind TSR</h2>
+
+        <p>
+          I spent 7 years inside recruiting functions — not as a consultant advising from the outside,
+          but as the person sourcing, screening, closing, and building teams. I've seen the same
+          broken patterns repeat across startups, scale-ups, and enterprise tech companies on
+          three continents.
+        </p>
+
+        <p>
+          Most recruiting content optimizes for one of two things: generic tips that sound good in
+          a LinkedIn caption, or vendor-sponsored "research" designed to sell you software.
+          The Strategic Recruiter is neither.
+        </p>
+
+        <p>
+          Every piece published here is grounded in documented field experience, real data, and
+          a specific point of view. I take positions. I question trends when the evidence doesn't
+          support them. I write the same way I'd brief a hiring manager before a critical search:
+          direct, specific, and without padding.
+        </p>
+
+        <blockquote>
+          <p>
+            "For IT Recruiting leaders who want to stop guessing and start winning — data-informed
+            strategies with the human insight that no algorithm can replace."
+          </p>
+        </blockquote>
+
+        <p>
+          The audience for TSR is specific by design: TA Managers, Heads of Recruiting, and
+          Recruiting Leads at tech companies who want to build recruiting functions that produce
+          measurable outcomes — not just fill seats. If you're looking for motivation content
+          or vendor comparisons, this isn't for you. If you want to think more clearly about
+          how you hire, keep reading.
+        </p>
+
+        <a
+          href="https://thestrategicrecruiter.beehiiv.com"
+          class="btn btn-primary"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Subscribe to the Newsletter — Free
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Brand Values ── -->
+  <section class="section section--gray values-section" aria-labelledby="values-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="label">BRAND VALUES</span>
+        <h2 id="values-heading">What TSR stands for — and what it doesn't.</h2>
+      </div>
+
+      <div class="values-grid">
+        <div class="value-card">
+          <h3>Authority</h3>
+          <p>
+            Written from experience, not theory. Every insight has 7 years of field work behind it.
+            When I cite data, I cite the source. When I share a framework, I've tested it.
+          </p>
+        </div>
+        <div class="value-card">
+          <h3>Clarity</h3>
+          <p>
+            Dense information translated into clear action. Never three words when one will do.
+            No corporate jargon. No "synergy." No "paradigm shifts." Just the thing.
+          </p>
+        </div>
+        <div class="value-card">
+          <h3>Human Precision</h3>
+          <p>
+            Data informs. People decide. Recruiting is ultimately about humans — candidates,
+            hiring managers, teams. The human element is never reduced to a metric.
+          </p>
+        </div>
+        <div class="value-card">
+          <h3>Independence</h3>
+          <p>
+            No vendor bias. No sponsored content dressed as editorial. No affiliate links.
+            TSR is funded by readers who find it valuable — full stop.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── What TSR covers ── -->
+  <section class="section coverage-section" aria-labelledby="coverage-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="label">WHAT YOU'LL FIND HERE</span>
+        <h2 id="coverage-heading">Strategy, not tips.</h2>
+        <p>
+          TSR covers the decisions and frameworks that move recruiting outcomes — not
+          the surface-level tactics you can find anywhere.
+        </p>
+      </div>
+
+      <div class="coverage-grid">
+        <div class="coverage-item">
+          <span class="coverage-num" aria-hidden="true">01</span>
+          <h3>Recruiting Metrics That Matter</h3>
+          <p>Which data points actually predict quality of hire — and which ones are vanity metrics disguised as KPIs.</p>
+        </div>
+        <div class="coverage-item">
+          <span class="coverage-num" aria-hidden="true">02</span>
+          <h3>Sourcing Strategy</h3>
+          <p>How top companies build talent pipelines for roles that the market says are impossible to fill.</p>
+        </div>
+        <div class="coverage-item">
+          <span class="coverage-num" aria-hidden="true">03</span>
+          <h3>Process Design</h3>
+          <p>The operational decisions — intake sessions, interview loops, debrief design — that separate fast, high-quality hiring from slow, expensive mistakes.</p>
+        </div>
+        <div class="coverage-item">
+          <span class="coverage-num" aria-hidden="true">04</span>
+          <h3>TA Function Building</h3>
+          <p>How to structure a recruiting team, build credibility with hiring managers, and move from reactive to strategic.</p>
+        </div>
+      </div>
+
+      <div class="cta-block">
+        <a href="/blog" class="btn btn-outline">Start reading →</a>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ── About Hero ── */
+  .about-hero {
+    background: var(--deep-navy);
+    padding: var(--s8) 0 var(--s5);
+    color: var(--white);
+  }
+  .about-hero .label { color: var(--steel-blue); }
+  .about-hero h1 {
+    color: var(--white);
+    margin: var(--s1) 0 var(--s3);
+    max-width: 680px;
+  }
+  .about-hero-sub {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.78);
+    max-width: 580px;
+    margin: 0;
+  }
+
+  /* ── Bio ── */
+  .bio-section { background: var(--white); }
+
+  .bio-inner {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: var(--s8);
+    align-items: start;
+  }
+
+  .bio-avatar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s2);
+    position: sticky;
+    top: calc(5px + 80px);
+  }
+
+  .bio-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--deep-navy);
+    color: var(--steel-blue);
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--steel-blue);
+  }
+
+  .bio-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--deep-navy);
+    margin: 0;
+  }
+  .bio-subtitle {
+    font-size: 0.8rem;
+    color: var(--steel-blue);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+
+  .bio-stats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+    margin-top: var(--s2);
+    padding-top: var(--s2);
+    border-top: 1px solid rgba(26,39,68,0.12);
+    width: 100%;
+  }
+  .bio-stat {
+    display: flex;
+    flex-direction: column;
+  }
+  .bio-stat-num {
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--deep-navy);
+    line-height: 1;
+  }
+  .bio-stat span:last-child {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  /* Bio copy */
+  .bio-copy h2 { margin-bottom: var(--s3); }
+  .bio-copy p  { margin-bottom: var(--s3); }
+
+  .bio-copy blockquote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--deep-navy);
+    border-left: 4px solid var(--steel-blue);
+    padding: var(--s2) var(--s3);
+    margin: var(--s4) 0;
+    background: var(--light-gray);
+  }
+
+  /* ── Values ── */
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s4);
+  }
+
+  .value-card {
+    background: var(--white);
+    border-left: 4px solid var(--btn-bg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    padding: var(--s3);
+    transition: box-shadow var(--t), transform var(--t);
+  }
+  .value-card:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+  }
+  .value-card h3 {
+    font-size: 1rem;
+    color: var(--deep-navy);
+    margin-bottom: var(--s1);
+  }
+  .value-card p { font-size: 0.9rem; line-height: 1.65; margin: 0; }
+
+  /* ── Coverage ── */
+  .coverage-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s4);
+    margin-bottom: var(--s5);
+  }
+
+  .coverage-item {
+    padding: var(--s3) 0;
+    border-top: 2px solid var(--light-gray);
+  }
+
+  .coverage-num {
+    display: block;
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--light-gray);
+    line-height: 1;
+    margin-bottom: var(--s1);
+  }
+
+  .coverage-item h3 { margin-bottom: var(--s1); }
+  .coverage-item p  { font-size: 0.9rem; line-height: 1.65; margin: 0; }
+
+  .cta-block { text-align: center; }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .bio-inner { grid-template-columns: 1fr; }
+    .bio-avatar-col { position: static; flex-direction: row; align-items: center; gap: var(--s3); }
+    .bio-stats { flex-direction: row; margin-top: 0; padding-top: 0; border-top: none; width: auto; }
+  }
+
+  @media (max-width: 768px) {
+    .bio-avatar-col { flex-direction: column; align-items: flex-start; }
+    .bio-stats { flex-direction: column; }
+    .values-grid   { grid-template-columns: 1fr; }
+    .coverage-grid { grid-template-columns: 1fr; }
+  }
+</style>

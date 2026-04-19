@@ -1,0 +1,383 @@
+---
+/**
+ * blog/[...slug].astro — Post Template (SSG)
+ * Renders each blog post from Content Collections
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props:  { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const { title, description, pubDate, image, category, author } = post.data;
+
+const formattedDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+
+// Estimate reading time (~200 wpm)
+const wordCount   = post.body.split(/\s+/).length;
+const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+// Related posts: same category, excluding this one
+const allPosts = await getCollection('blog');
+const related = allPosts
+  .filter(p => p.slug !== post.slug && p.data.category === category)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 2);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image={image}
+  type="article"
+  pubDate={pubDate}
+  author={author}
+>
+
+  <!-- ── Post Header ── -->
+  <header class="post-header" aria-labelledby="post-title">
+    <div class="container">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol role="list">
+          <li><a href="/">Home</a></li>
+          <li aria-hidden="true">›</li>
+          <li><a href="/blog">Insights</a></li>
+          <li aria-hidden="true">›</li>
+          <li aria-current="page">{title}</li>
+        </ol>
+      </nav>
+
+      <div class="post-meta">
+        <span class="label">{category}</span>
+        <time datetime={pubDate.toISOString()} class="post-date">{formattedDate}</time>
+        <span class="reading-time" aria-label={`${readingTime} minute read`}>
+          {readingTime} min read
+        </span>
+      </div>
+
+      <h1 id="post-title">{title}</h1>
+
+      <p class="post-description">{description}</p>
+
+      <div class="post-byline">
+        <span class="byline-name">By {author}</span>
+        <span aria-hidden="true">·</span>
+        <span class="byline-role">Talent Acquisition Strategist</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Post Body ── -->
+  <div class="post-body">
+    <div class="container post-container">
+      <article class="prose" aria-label="Article content">
+        <Content />
+      </article>
+
+      <!-- Author Bio sidebar -->
+      <aside class="post-sidebar" aria-label="Author information">
+        <div class="author-card">
+          <div class="author-avatar" aria-hidden="true">MV</div>
+          <h3>{author}</h3>
+          <p class="author-title">Talent Acquisition Strategist</p>
+          <p>
+            7 years building and scaling IT recruiting functions across 40+ tech companies.
+            Writing from the field, not the theory.
+          </p>
+          <a
+            href="https://thestrategicrecruiter.beehiiv.com"
+            class="btn btn-primary"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Read the Newsletter
+          </a>
+          <a href="/about" class="sidebar-link">About TSR →</a>
+        </div>
+
+        <!-- TOC placeholder — progressive enhancement -->
+        <div class="toc-block" id="toc-container" aria-label="Table of contents">
+          <h4>In this article</h4>
+          <nav id="toc-nav" aria-label="Article sections"></nav>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ── Related Posts ── -->
+  {related.length > 0 && (
+    <section class="section section--gray related-posts" aria-labelledby="related-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">MORE INSIGHTS</span>
+          <h2 id="related-heading">Related reading</h2>
+        </div>
+        <div class="related-grid">
+          {related.map(r => (
+            <article class="post-card">
+              <div class="card-meta">
+                <span class="label">{r.data.category}</span>
+                <time datetime={r.data.pubDate.toISOString()}>
+                  {r.data.pubDate.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}
+                </time>
+              </div>
+              <h3><a href={`/blog/${r.slug}`}>{r.data.title}</a></h3>
+              <p>{r.data.description}</p>
+              <a href={`/blog/${r.slug}`} class="card-link">Read insight →</a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ── Back link ── -->
+  <div class="section back-link-wrap">
+    <div class="container">
+      <a href="/blog" class="back-link">← Back to all insights</a>
+    </div>
+  </div>
+
+</BaseLayout>
+
+<script>
+  // Build Table of Contents from h2 elements in article
+  const headings   = document.querySelectorAll<HTMLHeadingElement>('article.prose h2');
+  const tocNav     = document.getElementById('toc-nav');
+  const tocBlock   = document.getElementById('toc-container');
+
+  if (headings.length > 1 && tocNav && tocBlock) {
+    const ul = document.createElement('ul');
+    headings.forEach((h, i) => {
+      if (!h.id) h.id = `section-${i}`;
+      const li = document.createElement('li');
+      const a  = document.createElement('a');
+      a.href        = `#${h.id}`;
+      a.textContent = h.textContent ?? '';
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    tocNav.appendChild(ul);
+  } else if (tocBlock) {
+    tocBlock.style.display = 'none';
+  }
+
+  // Highlight active TOC item on scroll
+  if (headings.length > 1) {
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(e => {
+          const link = tocNav?.querySelector<HTMLAnchorElement>(`a[href="#${e.target.id}"]`);
+          link?.classList.toggle('toc-active', e.isIntersecting);
+        });
+      },
+      { rootMargin: '-20% 0px -70% 0px' }
+    );
+    headings.forEach(h => observer.observe(h));
+  }
+</script>
+
+<style>
+  /* ── Post Header (dark) ── */
+  .post-header {
+    background: var(--deep-navy);
+    padding: var(--s8) 0 var(--s5);
+    color: var(--white);
+  }
+
+  .breadcrumb ol {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: var(--s3);
+  }
+  .breadcrumb li { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+  .breadcrumb a {
+    color: var(--steel-blue);
+    text-decoration: none;
+    transition: opacity 0.3s ease-in-out;
+  }
+  .breadcrumb a:hover { opacity: 0.75; }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--s2);
+    margin-bottom: var(--s2);
+    flex-wrap: wrap;
+  }
+  .post-date, .reading-time {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.55);
+  }
+
+  .post-header h1 {
+    color: var(--white);
+    max-width: 820px;
+    margin-bottom: var(--s3);
+  }
+
+  .post-description {
+    font-size: 1.1rem;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.78);
+    max-width: 680px;
+    margin-bottom: var(--s3);
+  }
+
+  .post-byline {
+    display: flex;
+    align-items: center;
+    gap: var(--s1);
+    font-size: 0.875rem;
+    color: rgba(255,255,255,0.55);
+  }
+  .byline-name { font-weight: 600; color: var(--steel-blue); }
+
+  /* ── Post Body Layout ── */
+  .post-body { padding: var(--s6) 0; background: var(--white); }
+
+  .post-container {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--s8);
+    align-items: start;
+  }
+
+  /* ── Sidebar ── */
+  .post-sidebar {
+    position: sticky;
+    top: calc(5px + 80px); /* header height + gold border */
+    display: flex;
+    flex-direction: column;
+    gap: var(--s4);
+  }
+
+  .author-card {
+    background: var(--light-gray);
+    border-left: 4px solid var(--btn-bg);
+    padding: var(--s3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+
+  .author-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--deep-navy);
+    color: var(--steel-blue);
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .author-card h3 {
+    font-size: 1rem;
+    color: var(--deep-navy);
+    margin: 0;
+  }
+  .author-title {
+    font-size: 0.8rem;
+    color: var(--steel-blue);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+  .author-card p {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .author-card .btn { font-size: 0.875rem; padding: 10px 20px; text-align: center; }
+  .sidebar-link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--btn-bg);
+    text-align: center;
+    transition: color 0.3s ease-in-out;
+  }
+  .sidebar-link:hover { color: var(--deep-navy); }
+
+  /* TOC */
+  .toc-block {
+    background: var(--light-gray);
+    border-left: 4px solid var(--steel-blue);
+    padding: var(--s3);
+  }
+  .toc-block h4 {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--steel-blue);
+    margin-bottom: var(--s2);
+  }
+  :global(#toc-nav ul) { list-style: none; padding: 0; }
+  :global(#toc-nav li) { margin-bottom: 6px; }
+  :global(#toc-nav a) {
+    font-size: 0.85rem;
+    color: var(--off-black);
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+    display: block;
+    padding-left: 8px;
+    border-left: 2px solid transparent;
+  }
+  :global(#toc-nav a:hover),
+  :global(#toc-nav a.toc-active) {
+    color: var(--btn-bg);
+    border-left-color: var(--btn-bg);
+  }
+
+  /* ── Related Posts ── */
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--s4);
+  }
+
+  /* ── Back Link ── */
+  .back-link-wrap { padding-top: 0; }
+  .back-link {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--btn-bg);
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+  }
+  .back-link:hover { color: var(--deep-navy); }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .post-container {
+      grid-template-columns: 1fr;
+    }
+    .post-sidebar { position: static; }
+    .author-card .btn { display: none; }
+  }
+
+  @media (max-width: 640px) {
+    .related-grid { grid-template-columns: 1fr; }
+  }
+</style>

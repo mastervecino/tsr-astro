@@ -1,0 +1,79 @@
+---
+/**
+ * BaseLayout.astro — Global shell for all pages
+ * Wraps Header, <slot />, Footer
+ * Accepts SEO props and forwards them to the SEO component
+ */
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SEO    from '../components/SEO.astro';
+import '../styles/global.css';
+
+interface Props {
+  title:       string;
+  description: string;
+  image?:      string;
+  type?:       'website' | 'article';
+  pubDate?:    Date;
+  author?:     string;
+}
+
+const { title, description, image, type, pubDate, author } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1A2744">
+
+  <!-- Preconnect fonts for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+  <!-- SEO Component handles all meta / OG / LD+JSON -->
+  <SEO
+    title={title}
+    description={description}
+    image={image}
+    type={type}
+    pubDate={pubDate}
+    author={author}
+  />
+</head>
+
+<body>
+  <a class="skip-link sr-only" href="#main-content">Skip to content</a>
+
+  <Header />
+
+  <main id="main-content" tabindex="-1">
+    <slot />
+  </main>
+
+  <Footer />
+</body>
+</html>
+
+<style is:global>
+  /* Skip link — shown on focus for keyboard users */
+  .skip-link:focus {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 9999;
+    background: #60A5FA;
+    color: #1A2744;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 4px;
+    clip: auto;
+    width: auto;
+    height: auto;
+    white-space: nowrap;
+  }
+</style>

@@ -1,0 +1,327 @@
+---
+/**
+ * index.astro — Home Page
+ * Sections: Hero → About teaser → Recent posts → Stats
+ * NO forms or newsletter subscription blocks (per spec)
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard   from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const recentPosts = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+---
+
+<BaseLayout
+  title="The Strategic Recruiter"
+  description="Data-informed strategies with the human insight that no algorithm can replace. The authority newsletter for IT Recruiting and Talent Acquisition leaders."
+>
+
+  <!-- ══════════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════════ -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="container">
+      <div class="hero-content">
+        <span class="label">TALENT ACQUISITION · IT RECRUITING · STRATEGY</span>
+        <h1 id="hero-heading">
+          Data-informed strategies with the human insight that no algorithm can replace.
+        </h1>
+        <p class="hero-sub">
+          Most recruiting funnels are broken at the same place. I've seen it across 40+ companies.
+          This is where I show you where — and how to fix it.
+        </p>
+        <div class="hero-actions">
+          <a href="/blog" class="btn btn-primary">Read the Insights</a>
+          <a
+            href="https://thestrategicrecruiter.beehiiv.com"
+            class="btn btn-ghost"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Get the Newsletter
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-stats" aria-label="TSR key figures">
+        <div class="stat-item">
+          <span class="stat-number">7+</span>
+          <span class="stat-label">Years in the field</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">40+</span>
+          <span class="stat-label">Companies analyzed</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">0</span>
+          <span class="stat-label">Vendor biases</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       RECENT POSTS
+  ══════════════════════════════════════════════ -->
+  <section class="section section--gray recent-posts" aria-labelledby="posts-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="label">LATEST INSIGHTS</span>
+        <h2 id="posts-heading">Three questions your recruiting dashboard isn't answering.</h2>
+      </div>
+
+      <div class="posts-grid">
+        {recentPosts.map(post => (
+          <PostCard
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            slug={post.slug}
+            category={post.data.category}
+            image={post.data.image}
+            featured={post.data.featured}
+          />
+        ))}
+      </div>
+
+      <div class="view-all">
+        <a href="/blog" class="btn btn-outline">View all insights →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       STAT BLOCK
+  ══════════════════════════════════════════════ -->
+  <section class="section section--gray stat-section" aria-labelledby="stats-heading">
+    <div class="container">
+      <div class="section-header">
+        <span class="label">BY THE NUMBERS</span>
+        <h2 id="stats-heading" class="sr-only">Key industry statistics</h2>
+      </div>
+      <div class="stats-row">
+        <div class="big-stat">
+          <span class="big-number">47%</span>
+          <p>of candidates ghost after the first interview. It's not them. It's your process.</p>
+        </div>
+        <div class="big-stat">
+          <span class="big-number">3.2×</span>
+          <p>longer time-to-fill when recruiters skip structured intake sessions with hiring managers.</p>
+        </div>
+        <div class="big-stat">
+          <span class="big-number">68%</span>
+          <p>of TA leaders report their tech stack generates data they don't know how to act on.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       ABOUT TEASER
+  ══════════════════════════════════════════════ -->
+  <section class="section about-teaser" aria-labelledby="about-heading">
+    <div class="container">
+      <div class="about-inner">
+        <div class="about-copy">
+          <span class="label">ABOUT TSR</span>
+          <h2 id="about-heading">This is not a blog of generic tips.</h2>
+          <p>
+            The Strategic Recruiter is authority intelligence for IT Recruiting and
+            Talent Acquisition professionals — written by someone who has lived the field
+            for 7 years, not theorized about it from the outside.
+          </p>
+          <p>
+            The ideal reader is a TA Manager, Head of Recruiting, or Recruiting Lead at
+            a tech company who wants to make better decisions, faster. No sponsored content.
+            No vendor bias. No empty trends.
+          </p>
+          <a href="/about" class="btn btn-outline">About the author →</a>
+        </div>
+        <div class="about-values">
+          <div class="value-item">
+            <h3>Authority</h3>
+            <p>Written from experience, not theory. Every insight has 7 years of field work behind it.</p>
+          </div>
+          <div class="value-item">
+            <h3>Clarity</h3>
+            <p>Dense information translated into clear action. No corporate jargon.</p>
+          </div>
+          <div class="value-item">
+            <h3>Human Precision</h3>
+            <p>Data informs. People decide. The human element of recruiting is never lost.</p>
+          </div>
+          <div class="value-item">
+            <h3>Independence</h3>
+            <p>No vendor bias. No sponsored content dressed as editorial. Period.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* ── HERO ─────────────────────────────────────── */
+  .hero {
+    background: var(--deep-navy);
+    padding: var(--s10) 0 var(--s8);
+    color: var(--white);
+  }
+
+  .hero-content {
+    max-width: 780px;
+    margin-bottom: var(--s8);
+  }
+
+  .hero .label { color: var(--steel-blue); }
+
+  .hero h1 {
+    color: var(--white);
+    margin: var(--s2) 0 var(--s3);
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.78);
+    max-width: 600px;
+    margin-bottom: var(--s5);
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--s2);
+    flex-wrap: wrap;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: var(--s6);
+    padding-top: var(--s5);
+    border-top: 1px solid rgba(96,165,250,0.25);
+    flex-wrap: wrap;
+  }
+
+  .stat-item { display: flex; flex-direction: column; }
+
+  .stat-number {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 4vw, 2.75rem);
+    font-weight: 700;
+    color: var(--steel-blue);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.6);
+    margin-top: 5px;
+  }
+
+  /* ── RECENT POSTS ─────────────────────────────── */
+  .recent-posts { border-top: 0; }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s4);
+    margin-bottom: var(--s5);
+  }
+
+  .view-all { text-align: center; }
+
+  /* ── STATS ────────────────────────────────────── */
+  .stat-section { border-top: 1px solid rgba(0,0,0,0.06); }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s5);
+  }
+
+  .big-stat {
+    background: var(--white);
+    padding: var(--s4);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  }
+
+  .big-number {
+    display: block;
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 4vw, 3.75rem);
+    font-weight: 700;
+    color: var(--deep-navy);
+    line-height: 1;
+    margin-bottom: var(--s2);
+  }
+
+  .big-stat p {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--off-black);
+    margin: 0;
+  }
+
+  /* ── ABOUT TEASER ─────────────────────────────── */
+  .about-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s8);
+    align-items: start;
+  }
+
+  .about-copy p { margin-bottom: var(--s3); }
+  .about-copy .btn { margin-top: var(--s2); }
+
+  .about-values {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s3);
+  }
+
+  .value-item {
+    background: var(--white);
+    border-left: 4px solid var(--btn-bg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    padding: var(--s3);
+    transition: box-shadow var(--t), transform var(--t);
+  }
+  .value-item:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+  }
+
+  .value-item h3 {
+    font-size: 0.975rem;
+    color: var(--deep-navy);
+    margin-bottom: var(--s1);
+  }
+  .value-item p {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--off-black);
+    margin: 0;
+  }
+
+  /* ── RESPONSIVE ───────────────────────────────── */
+  @media (max-width: 1024px) {
+    .about-inner  { grid-template-columns: 1fr; gap: var(--s5); }
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding: var(--s6) 0; }
+    .hero-stats { gap: var(--s4); }
+    .posts-grid  { grid-template-columns: 1fr; }
+    .stats-row   { grid-template-columns: 1fr; gap: var(--s3); }
+    .about-values { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-actions { flex-direction: column; }
+    .hero-actions .btn { text-align: center; }
+  }
+</style>

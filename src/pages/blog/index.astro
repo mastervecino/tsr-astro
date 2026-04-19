@@ -1,0 +1,169 @@
+---
+/**
+ * blog/index.astro — Blog Archive
+ * All posts, sorted newest first, with category filter tabs
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard   from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const posts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Unique categories for filter (rendered as static links)
+const categories = ['All', ...new Set(posts.map(p => p.data.category ?? 'Strategy'))];
+---
+
+<BaseLayout
+  title="Insights — The Strategic Recruiter"
+  description="Data-informed strategies for IT Recruiting and Talent Acquisition leaders. No generic tips — strategic intelligence from 7 years in the field."
+>
+
+  <!-- ── Page Header ── -->
+  <section class="archive-hero" aria-labelledby="archive-heading">
+    <div class="container">
+      <span class="label">INSIGHTS ARCHIVE</span>
+      <h1 id="archive-heading">The intelligence you need to lead — not just recruit.</h1>
+      <p class="archive-sub">
+        {posts.length} {posts.length === 1 ? 'insight' : 'insights'} · Updated regularly ·
+        Zero sponsored content
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Posts Grid ── -->
+  <section class="section section--gray" aria-label="All insights">
+    <div class="container">
+
+      <!-- Category filter (static, JS-enhanced via data-filter) -->
+      <nav class="filter-nav" aria-label="Filter by category">
+        {categories.map(cat => (
+          <button
+            class:list={['filter-btn', { 'is-active': cat === 'All' }]}
+            data-filter={cat}
+            aria-pressed={cat === 'All' ? 'true' : 'false'}
+          >
+            {cat}
+          </button>
+        ))}
+      </nav>
+
+      <div class="posts-grid" id="posts-grid">
+        {posts.map(post => (
+          <div class="post-wrapper" data-category={post.data.category ?? 'Strategy'}>
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              slug={post.slug}
+              category={post.data.category}
+              image={post.data.image}
+            />
+          </div>
+        ))}
+      </div>
+
+      {posts.length === 0 && (
+        <p class="empty-state">No insights published yet. Check back soon.</p>
+      )}
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  // Client-side category filtering (progressive enhancement)
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const wrappers   = document.querySelectorAll<HTMLElement>('.post-wrapper');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter ?? 'All';
+
+      // Update active state
+      filterBtns.forEach(b => {
+        b.classList.toggle('is-active', b === btn);
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
+
+      // Show/hide posts
+      wrappers.forEach(wrap => {
+        const cat = wrap.dataset.category ?? 'Strategy';
+        const show = filter === 'All' || cat === filter;
+        wrap.style.display = show ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+  /* ── Archive Hero ── */
+  .archive-hero {
+    background: var(--deep-navy);
+    padding: var(--s8) 0 var(--s5);
+    color: var(--white);
+  }
+  .archive-hero .label { color: var(--steel-blue); }
+  .archive-hero h1 {
+    color: var(--white);
+    margin: var(--s1) 0 var(--s2);
+    max-width: 680px;
+  }
+  .archive-sub {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+  }
+
+  /* ── Filter Nav ── */
+  .filter-nav {
+    display: flex;
+    gap: var(--s2);
+    flex-wrap: wrap;
+    margin-bottom: var(--s5);
+  }
+
+  .filter-btn {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    border: 2px solid var(--btn-bg);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--btn-bg);
+    cursor: pointer;
+    transition: background var(--t), color var(--t);
+  }
+  .filter-btn:hover,
+  .filter-btn.is-active {
+    background: var(--btn-bg);
+    color: var(--white);
+  }
+
+  /* ── Posts Grid ── */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s4);
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: var(--s8) 0;
+  }
+
+  @media (max-width: 1024px) {
+    .posts-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .posts-grid { grid-template-columns: 1fr; }
+  }
+</style>
