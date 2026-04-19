@@ -1,8 +1,7 @@
 ---
 /**
- * index.astro — Home Page
- * Sections: Hero → About teaser → Recent posts → Stats
- * NO forms or newsletter subscription blocks (per spec)
+ * index.astro — Home Page (Astro 6)
+ * Uses post.id instead of post.slug (Content Layer API)
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard   from '../components/PostCard.astro';
@@ -79,7 +78,7 @@ const recentPosts = allPosts
             title={post.data.title}
             description={post.data.description}
             pubDate={post.data.pubDate}
-            slug={post.slug}
+            slug={post.id}
             category={post.data.category}
             image={post.data.image}
             featured={post.data.featured}
@@ -171,19 +170,9 @@ const recentPosts = allPosts
     padding: var(--s10) 0 var(--s8);
     color: var(--white);
   }
-
-  .hero-content {
-    max-width: 780px;
-    margin-bottom: var(--s8);
-  }
-
-  .hero .label { color: var(--steel-blue); }
-
-  .hero h1 {
-    color: var(--white);
-    margin: var(--s2) 0 var(--s3);
-  }
-
+  .hero-content { max-width: 780px; margin-bottom: var(--s8); }
+  .hero .label  { color: var(--steel-blue); }
+  .hero h1 { color: var(--white); margin: var(--s2) 0 var(--s3); }
   .hero-sub {
     font-size: 1.1rem;
     line-height: 1.65;
@@ -191,12 +180,7 @@ const recentPosts = allPosts
     max-width: 600px;
     margin-bottom: var(--s5);
   }
-
-  .hero-actions {
-    display: flex;
-    gap: var(--s2);
-    flex-wrap: wrap;
-  }
+  .hero-actions { display: flex; gap: var(--s2); flex-wrap: wrap; }
 
   .hero-stats {
     display: flex;
@@ -205,9 +189,7 @@ const recentPosts = allPosts
     border-top: 1px solid rgba(96,165,250,0.25);
     flex-wrap: wrap;
   }
-
   .stat-item { display: flex; flex-direction: column; }
-
   .stat-number {
     font-family: var(--serif);
     font-size: clamp(2.2rem, 4vw, 2.75rem);
@@ -215,40 +197,29 @@ const recentPosts = allPosts
     color: var(--steel-blue);
     line-height: 1;
   }
-
-  .stat-label {
-    font-size: 0.82rem;
-    color: rgba(255,255,255,0.6);
-    margin-top: 5px;
-  }
+  .stat-label { font-size: 0.82rem; color: rgba(255,255,255,0.6); margin-top: 5px; }
 
   /* ── RECENT POSTS ─────────────────────────────── */
-  .recent-posts { border-top: 0; }
-
   .posts-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--s4);
     margin-bottom: var(--s5);
   }
-
   .view-all { text-align: center; }
 
   /* ── STATS ────────────────────────────────────── */
   .stat-section { border-top: 1px solid rgba(0,0,0,0.06); }
-
   .stats-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--s5);
   }
-
   .big-stat {
     background: var(--white);
     padding: var(--s4);
     box-shadow: 0 2px 4px rgba(0,0,0,0.08);
   }
-
   .big-number {
     display: block;
     font-family: var(--serif);
@@ -258,13 +229,7 @@ const recentPosts = allPosts
     line-height: 1;
     margin-bottom: var(--s2);
   }
-
-  .big-stat p {
-    font-size: 0.9rem;
-    line-height: 1.55;
-    color: var(--off-black);
-    margin: 0;
-  }
+  .big-stat p { font-size: 0.9rem; line-height: 1.55; color: var(--off-black); margin: 0; }
 
   /* ── ABOUT TEASER ─────────────────────────────── */
   .about-inner {
@@ -273,16 +238,13 @@ const recentPosts = allPosts
     gap: var(--s8);
     align-items: start;
   }
-
   .about-copy p { margin-bottom: var(--s3); }
   .about-copy .btn { margin-top: var(--s2); }
-
   .about-values {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--s3);
   }
-
   .value-item {
     background: var(--white);
     border-left: 4px solid var(--btn-bg);
@@ -290,36 +252,21 @@ const recentPosts = allPosts
     padding: var(--s3);
     transition: box-shadow var(--t), transform var(--t);
   }
-  .value-item:hover {
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-    transform: translateY(-2px);
-  }
-
-  .value-item h3 {
-    font-size: 0.975rem;
-    color: var(--deep-navy);
-    margin-bottom: var(--s1);
-  }
-  .value-item p {
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: var(--off-black);
-    margin: 0;
-  }
+  .value-item:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.12); transform: translateY(-2px); }
+  .value-item h3 { font-size: 0.975rem; color: var(--deep-navy); margin-bottom: var(--s1); }
+  .value-item p  { font-size: 0.875rem; line-height: 1.6; color: var(--off-black); margin: 0; }
 
   /* ── RESPONSIVE ───────────────────────────────── */
   @media (max-width: 1024px) {
-    .about-inner  { grid-template-columns: 1fr; gap: var(--s5); }
+    .about-inner { grid-template-columns: 1fr; gap: var(--s5); }
   }
-
   @media (max-width: 768px) {
-    .hero { padding: var(--s6) 0; }
-    .hero-stats { gap: var(--s4); }
+    .hero        { padding: var(--s6) 0; }
+    .hero-stats  { gap: var(--s4); }
     .posts-grid  { grid-template-columns: 1fr; }
     .stats-row   { grid-template-columns: 1fr; gap: var(--s3); }
     .about-values { grid-template-columns: 1fr; }
   }
-
   @media (max-width: 480px) {
     .hero-actions { flex-direction: column; }
     .hero-actions .btn { text-align: center; }

@@ -1,15 +1,18 @@
 ---
 /**
- * blog/[...slug].astro — Post Template (SSG)
- * Renders each blog post from Content Collections
+ * blog/[...slug].astro — Post Template (SSG, Astro 6)
+ *
+ * Astro 6 Content Layer changes vs Astro 4:
+ *   - `post.slug`    → `post.id`
+ *   - `post.render()` → `render(post)` imported from 'astro:content'
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map(post => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },   // Astro 6: use post.id
     props:  { post },
   }));
 }
@@ -19,7 +22,7 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);   // Astro 6: render(post) not post.render()
 
 const { title, description, pubDate, image, category, author } = post.data;
 
@@ -28,13 +31,13 @@ const formattedDate = pubDate.toLocaleDateString('en-US', {
 });
 
 // Estimate reading time (~200 wpm)
-const wordCount   = post.body.split(/\s+/).length;
+const wordCount   = post.body?.split(/\s+/).length ?? 0;
 const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
-// Related posts: same category, excluding this one
+// Related posts: same category, excluding current
 const allPosts = await getCollection('blog');
 const related = allPosts
-  .filter(p => p.slug !== post.slug && p.data.category === category)
+  .filter(p => p.id !== post.id && p.data.category === category)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 2);
 ---
@@ -110,7 +113,7 @@ const related = allPosts
           <a href="/about" class="sidebar-link">About TSR →</a>
         </div>
 
-        <!-- TOC placeholder — progressive enhancement -->
+        <!-- TOC — built client-side from h2 elements -->
         <div class="toc-block" id="toc-container" aria-label="Table of contents">
           <h4>In this article</h4>
           <nav id="toc-nav" aria-label="Article sections"></nav>
@@ -133,12 +136,16 @@ const related = allPosts
               <div class="card-meta">
                 <span class="label">{r.data.category}</span>
                 <time datetime={r.data.pubDate.toISOString()}>
-                  {r.data.pubDate.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}
+                  {r.data.pubDate.toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric',
+                  })}
                 </time>
               </div>
-              <h3><a href={`/blog/${r.slug}`}>{r.data.title}</a></h3>
+              <h3>
+                <a href={`/blog/${r.id}`}>{r.data.title}</a>
+              </h3>
               <p>{r.data.description}</p>
-              <a href={`/blog/${r.slug}`} class="card-link">Read insight →</a>
+              <a href={`/blog/${r.id}`} class="card-link">Read insight →</a>
             </article>
           ))}
         </div>
@@ -157,9 +164,9 @@ const related = allPosts
 
 <script>
   // Build Table of Contents from h2 elements in article
-  const headings   = document.querySelectorAll<HTMLHeadingElement>('article.prose h2');
-  const tocNav     = document.getElementById('toc-nav');
-  const tocBlock   = document.getElementById('toc-container');
+  const headings = document.querySelectorAll<HTMLHeadingElement>('article.prose h2');
+  const tocNav   = document.getElementById('toc-nav');
+  const tocBlock = document.getElementById('toc-container');
 
   if (headings.length > 1 && tocNav && tocBlock) {
     const ul = document.createElement('ul');
@@ -178,11 +185,11 @@ const related = allPosts
   }
 
   // Highlight active TOC item on scroll
-  if (headings.length > 1) {
+  if (headings.length > 1 && tocNav) {
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(e => {
-          const link = tocNav?.querySelector<HTMLAnchorElement>(`a[href="#${e.target.id}"]`);
+          const link = tocNav.querySelector<HTMLAnchorElement>(`a[href="#${e.target.id}"]`);
           link?.classList.toggle('toc-active', e.isIntersecting);
         });
       },
@@ -193,7 +200,7 @@ const related = allPosts
 </script>
 
 <style>
-  /* ── Post Header (dark) ── */
+  /* ── Post Header ── */
   .post-header {
     background: var(--deep-navy);
     padding: var(--s8) 0 var(--s5);
@@ -207,12 +214,8 @@ const related = allPosts
     flex-wrap: wrap;
     margin-bottom: var(--s3);
   }
-  .breadcrumb li { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
-  .breadcrumb a {
-    color: var(--steel-blue);
-    text-decoration: none;
-    transition: opacity 0.3s ease-in-out;
-  }
+  .breadcrumb li  { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+  .breadcrumb a   { color: var(--steel-blue); text-decoration: none; transition: opacity 0.3s ease-in-out; }
   .breadcrumb a:hover { opacity: 0.75; }
 
   .post-meta {
@@ -222,10 +225,7 @@ const related = allPosts
     margin-bottom: var(--s2);
     flex-wrap: wrap;
   }
-  .post-date, .reading-time {
-    font-size: 0.82rem;
-    color: rgba(255,255,255,0.55);
-  }
+  .post-date, .reading-time { font-size: 0.82rem; color: rgba(255,255,255,0.55); }
 
   .post-header h1 {
     color: var(--white);
@@ -255,7 +255,7 @@ const related = allPosts
 
   .post-container {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 300px;
     gap: var(--s8);
     align-items: start;
   }
@@ -263,7 +263,7 @@ const related = allPosts
   /* ── Sidebar ── */
   .post-sidebar {
     position: sticky;
-    top: calc(5px + 80px); /* header height + gold border */
+    top: calc(5px + 80px);
     display: flex;
     flex-direction: column;
     gap: var(--s4);
@@ -289,25 +289,16 @@ const related = allPosts
     align-items: center;
     justify-content: center;
   }
-
-  .author-card h3 {
-    font-size: 1rem;
-    color: var(--deep-navy);
-    margin: 0;
-  }
+  .author-card h3 { font-size: 1rem; color: var(--deep-navy); margin: 0; }
   .author-title {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--steel-blue);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin: 0;
   }
-  .author-card p {
-    font-size: 0.875rem;
-    line-height: 1.6;
-    margin: 0;
-  }
+  .author-card p { font-size: 0.875rem; line-height: 1.6; margin: 0; }
   .author-card .btn { font-size: 0.875rem; padding: 10px 20px; text-align: center; }
   .sidebar-link {
     font-size: 0.82rem;
@@ -315,6 +306,7 @@ const related = allPosts
     color: var(--btn-bg);
     text-align: center;
     transition: color 0.3s ease-in-out;
+    text-decoration: none;
   }
   .sidebar-link:hover { color: var(--deep-navy); }
 
@@ -357,7 +349,7 @@ const related = allPosts
     gap: var(--s4);
   }
 
-  /* ── Back Link ── */
+  /* Back link */
   .back-link-wrap { padding-top: 0; }
   .back-link {
     font-size: 0.9rem;
@@ -370,13 +362,10 @@ const related = allPosts
 
   /* ── Responsive ── */
   @media (max-width: 1024px) {
-    .post-container {
-      grid-template-columns: 1fr;
-    }
-    .post-sidebar { position: static; }
+    .post-container { grid-template-columns: 1fr; }
+    .post-sidebar   { position: static; }
     .author-card .btn { display: none; }
   }
-
   @media (max-width: 640px) {
     .related-grid { grid-template-columns: 1fr; }
   }
